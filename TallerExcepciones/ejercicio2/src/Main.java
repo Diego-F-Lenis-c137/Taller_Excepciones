@@ -2,6 +2,7 @@
 import java.util.Scanner;
 
 import exceptions.NotEnoughFunds;
+import exceptions.UserNotFound;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +25,8 @@ public class Main
     //!Funcion que despliega el MenuPrincipal en consola ---------------------------------------------------
     static void menuPrincipal()
     {
-        while (true) {
+        boolean loop = false;
+        while (!loop) {
             int opcion;
             try {
                 System.out.println("--------------------GESTOR DE CUENTAS UNIVALLE--------------------");
@@ -51,10 +53,10 @@ public class Main
                         crearUsuario();
                         break;
                     case 3:
-                        System.exit(0); // Salir del programa
+                        loop = true;
                         break;
                 }
-                break; // Salir del bucle while si la entrada es válida
+
             } catch (InputMismatchException e) {
                 System.out.println("Error: Por favor, ingrese un número entero válido.");
                 input.next(); // Limpiar el buffer de entrada
@@ -304,8 +306,7 @@ public class Main
                 }
     
                 if (!destinatarioValido) {
-                    System.out.println("Error: El nombre de usuario no es válido.");
-                    continue; // Volver a solicitar el nombre del destinatario
+                    throw new UserNotFound("Error: El nombre de usuario no es válido.");
                 }
     
                 System.out.println("Por favor ingrese la cantidad de dinero que desea transferir:");
@@ -313,8 +314,7 @@ public class Main
     
                 // Verificar si la cantidad ingresada es válida
                 if (cantidad <= 0 || cantidad > usuarioActual.getSaldo()) {
-                    System.out.println("Error: Por favor, ingrese una cantidad de dinero válida (menor o igual a su saldo actual).");
-                    continue; // Volver a solicitar la cantidad de dinero
+                    throw new NotEnoughFunds("Error: Por favor, ingrese una cantidad de dinero válida (menor o igual a su saldo actual).");
                 }
     
                 // Actualizar el saldo del usuario actual
@@ -339,6 +339,10 @@ public class Main
             } catch (InputMismatchException e) {
                 System.out.println("Error: Por favor, ingrese una cantidad de dinero válida (número decimal).");
                 input.next(); // Limpiar el buffer de entrada
+            } catch (UserNotFound e) {
+                System.out.println(e.getMessage());
+            } catch (NotEnoughFunds e) {
+                System.out.println(e.getMessage());
             }
         }
     }
